@@ -1,8 +1,14 @@
+import { realpath as resolveRealPath } from 'node:fs';
+import { promisify } from 'node:util';
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, readdir, realpath, rename, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rename, stat, writeFile } from 'node:fs/promises';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { ToolError } from './errors.mjs';
 import { truncateText } from './text-budget.mjs';
+
+// The callback resolver follows symlinks without requiring the native final-path
+// handle operation that fails in some Windows sandboxed runtimes.
+const realpath = promisify(resolveRealPath);
 
 export const DEFAULT_IGNORES = Object.freeze([
   '.git', '.hg', '.svn', '.idea', '.vscode', 'node_modules', 'vendor',
@@ -150,10 +156,10 @@ export class ProjectWorkspace {
     const results = [];
     const literal = options.caseSensitive ? needle : needle.toLocaleLowerCase();
     for (const file of inventory.files) {
-      if (results.length >= cap || !isTextFile(file.path)) continue;
+      if (results.length >= cap || !isTextFile(file.path) || isSensitiveProjectPath(file.path)) continue;
       if (file.size > (options.maxFileBytes ?? 500_000)) continue;
       const absolute = await this.resolvePath(file.path, { mustExist: true }).catch(() => null);
-      if (!absolute) continue;
+      if (!absolute || isSensitiveProjectPath(this.relativePath(absolute))) continue;
       const text = await readFile(absolute, 'utf8').catch(() => '');
       if (text.includes('\u0000')) continue;
       const lines = text.split(/\r?\n/);
@@ -175,6 +181,7 @@ export class ProjectWorkspace {
 
   async fileMetadata(input) {
     const full = await this.resolvePath(input, { mustExist: true });
+    if (isSensitiveProjectPath(this.relativePath(full))) throw new ToolError('Reading credential or private-key files is blocked.');
     const [info, content] = await Promise.all([stat(full), readFile(full)]);
     return {
       path: this.relativePath(full),

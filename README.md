@@ -325,3 +325,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance and [ROADMAP.md
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Runtime regression checks
+
+Run `npm run check` for module syntax and `npm test` for isolated filesystem, checkpoint and provider-body cancellation regressions. The tests use Node's built-in test runner and need no live model, API keys or installed browser. CI checks Windows, macOS and Linux on Node 20 and 22. Symlink tests are skipped only when the operating system refuses symlink creation.
+
+Workspace search and metadata obey the same credential-file filter as direct reads. Run IDs contain 1�128 ASCII letters, digits, underscores or hyphens and start with a letter or digit. Invalid run directories are ignored when listing previous runs. Corrupt checkpoints are reported and preserved rather than silently replaced. Provider request deadlines include consumption of the HTTP response body.
