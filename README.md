@@ -1,5 +1,7 @@
 # ForgeFlow CLI
 
+![ForgeFlow CLI — coordinated coding workflows](forgeflow-banner.svg)
+
 ForgeFlow bir uzun layihə promptunu planlaşdıran, işi fayl sahələrinə görə bölən və terminaldan idarə olunan kodlaşdırma agentlərini növbə ilə işlədən proqramdır. Windows, macOS və Linux-da Node.js 20+ ilə işləyir.
 
 ## Nə edir
