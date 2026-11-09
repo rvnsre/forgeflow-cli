@@ -1,10 +1,8 @@
 # ForgeFlow CLI
 
-![ForgeFlow CLI overview](forgeflow-banner.svg)
-
 **Turn a detailed project prompt into a coordinated coding workflow.** ForgeFlow is a terminal application for Windows, macOS, and Linux that plans work, schedules scoped tasks, and saves progress for later recovery.
 
-It supports **up to 256 concurrent task slots**, with a default of **4 workers**. Actual throughput depends on your API limits, model, machine, and task dependencies. The illustrations below describe the architecture; they are not benchmark results or application screenshots.
+It supports **up to 256 concurrent task slots**, with a default of **4 workers**. Actual throughput depends on your API limits, model, machine, and task dependencies. The product illustrations below explain the workflow and are not application screenshots or benchmark results.
 
 [Quick start](#quick-start) · [Browser tools](#browser-tools) · [Configuration](#api-configuration) · [Recovery](#checkpoint-and-resume) · [CLI reference](#cli-reference)
 
@@ -21,7 +19,7 @@ The core CLI uses Node.js built-in modules. Playwright is an optional dependency
 
 ## How the workflow operates
 
-![Workflow architecture: prompt, planner, queue, workers, checkpoint](forgeflow-workflow.svg)
+![Workflow architecture: prompt, planner, queue, workers, checkpoint](assets/forgeflow-workflow.png)
 
 ForgeFlow scans the project, requests a structured plan, validates task scopes and dependencies, and schedules work when prerequisites are complete. Failed tasks have a bounded retry allowance. Each completed task is recorded in persistent run state.
 
@@ -87,7 +85,7 @@ Use `--plan-only` to inspect the proposed task plan before execution. Shell comm
 
 ## Agent coordination
 
-![Agent coordination with dependency scheduling and scoped workers](forgeflow-agents.svg)
+![Agent coordination with dependency scheduling and scoped workers](assets/forgeflow-agents.png)
 
 | Capability | Behavior |
 | --- | --- |
@@ -113,7 +111,7 @@ Profiles are inferred from the task text. State the intended role clearly when a
 
 ## Browser tools
 
-![Browser inspection flow using compact semantic snapshots](forgeflow-browser.svg)
+![Browser inspection flow using compact semantic snapshots](assets/forgeflow-browser.png)
 
 Install Playwright and its Chromium runtime:
 
@@ -146,7 +144,7 @@ The browser rejects password entry, credential-bearing URLs, `file:` URLs, priva
 
 ## Context and token controls
 
-![Token controls from focused file reading to bounded API usage](forgeflow-context.svg)
+![Token controls from focused file reading to bounded API usage](assets/forgeflow-context.png)
 
 ForgeFlow uses focused searches and line ranges, role-specific tools, bounded tool responses, and trimmed conversation history to reduce context growth. Tool calls and their responses are retained as complete groups when recent context is kept.
 
