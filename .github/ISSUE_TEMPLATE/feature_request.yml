@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose a specific developer workflow improvement.
+title: "[Feature]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the workflow and the current obstacle.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Give a concrete example of the desired input and result.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and tradeoffs
+      description: Include effects on file scopes, recovery, token usage, or platform support when relevant.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: How would we know it works?
+      description: Suggest a small reproducible acceptance scenario.
+    validations:
+      required: true
