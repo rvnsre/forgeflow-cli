@@ -1,0 +1,17 @@
+{
+  "name": "forgeflow-cli",
+  "version": "0.2.0",
+  "description": "Cross-platform, resumable coding agent orchestrator with browser tools and token budgets",
+  "type": "module",
+  "bin": { "forgeflow": "./bin/forgeflow.mjs" },
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node ./bin/forgeflow.mjs",
+    "doctor": "node ./bin/forgeflow.mjs doctor",
+    "check": "node ./src/check-syntax.mjs"
+  },
+  "peerDependencies": { "playwright": ">=1.50.0" },
+  "peerDependenciesMeta": { "playwright": { "optional": true } },
+  "sideEffects": false,
+  "license": "MIT"
+}
