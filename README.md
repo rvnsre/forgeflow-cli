@@ -1,10 +1,16 @@
 # ForgeFlow CLI
 
-**Turn a detailed project prompt into a coordinated coding workflow.** ForgeFlow is a terminal application for Windows, macOS, and Linux that plans work, schedules scoped tasks, and saves progress for later recovery.
+**AI coding orchestration from your terminal.**
+
+Windows · macOS · Linux | Node.js 20+ | MIT | Early preview
+
+ForgeFlow turns a detailed project prompt into scoped, dependency-aware coding tasks. Run workers in parallel, inspect a local UI with Playwright, and resume interrupted work from saved checkpoints.
 
 It supports **up to 256 concurrent task slots**, with a default of **4 workers**. Actual throughput depends on your API limits, model, machine, and task dependencies. The product illustrations below explain the workflow and are not application screenshots or benchmark results.
 
-[Quick start](#quick-start) · [Browser tools](#browser-tools) · [Configuration](#api-configuration) · [Recovery](#checkpoint-and-resume) · [CLI reference](#cli-reference)
+[Quick start](#quick-start) · [Browser tools](#browser-tools) · [Configuration](#api-configuration) · [Recovery](#checkpoint-and-resume) · [CLI reference](#cli-reference) · [Contributing](CONTRIBUTING.md) · [Roadmap](ROADMAP.md)
+
+> **Project status:** Early preview. Syntax and installation diagnostics have been checked; live provider and browser workflows still need validation. Start with a small task in a disposable project copy.
 
 ## What you can build with it
 
@@ -309,6 +315,12 @@ node ./bin/forgeflow.mjs doctor
 ```
 
 The syntax check validates `.mjs` files with Node.js. It does not run integration tests or make provider API calls. Live API and browser execution have not been verified for this release.
+
+## Feedback and contributions
+
+Try a small project and [report what worked or failed](https://github.com/rvnsre/forgeflow-cli/issues/new). Include your OS, Node.js version, command, and redacted error output. Never include API keys.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance and [ROADMAP.md](ROADMAP.md) for current priorities. If ForgeFlow is useful to you, a GitHub star helps other developers discover it.
 
 ## License
 
