@@ -28,28 +28,39 @@ export function sleep(ms, signal) {
   });
 }
 
-export function withTimeout(operation, timeoutMs, signal, label = 'Operation') {
-  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return operation(signal);
+export async function withTimeout(operation, timeoutMs, signal, label = 'Operation') {
+  throwIfAborted(signal);
   const controller = new AbortController();
-  const relayAbort = () => controller.abort(abortReason(signal));
-  if (signal?.aborted) relayAbort();
-  else signal?.addEventListener('abort', relayAbort, { once: true });
-
   let timer;
-  const timeout = new Promise((_, reject) => {
-    timer = setTimeout(() => {
-      const error = new Error(`${label} timed out after ${timeoutMs} ms.`);
-      error.code = 'TIMEOUT';
-      controller.abort(error);
-      reject(error);
-    }, timeoutMs);
+  let relayAbort;
+  const interrupted = new Promise((_, reject) => {
+    relayAbort = () => {
+      const reason = abortReason(signal);
+      controller.abort(reason);
+      reject(reason);
+    };
+    signal?.addEventListener('abort', relayAbort, { once: true });
+    if (Number.isFinite(timeoutMs) && timeoutMs > 0) {
+      timer = setTimeout(() => {
+        const error = new Error(`${label} timed out after ${timeoutMs} ms.`);
+        error.code = 'TIMEOUT';
+        controller.abort(error);
+        reject(error);
+      }, timeoutMs);
+    }
   });
-
-  return Promise.race([operation(controller.signal), timeout])
-    .finally(() => {
-      clearTimeout(timer);
-      signal?.removeEventListener('abort', relayAbort);
-    });
+  try {
+    return await Promise.race([
+      Promise.resolve().then(() => {
+        throwIfAborted(controller.signal);
+        return operation(controller.signal);
+      }),
+      interrupted,
+    ]);
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', relayAbort);
+  }
 }
 
 export class Semaphore {
@@ -132,6 +143,7 @@ export class RateLimiter {
 }
 
 export async function mapLimit(items, limit, mapper, signal) {
+  if (!Number.isInteger(limit) || limit < 1) throw new RangeError('Concurrency limit must be a positive integer.');
   const results = new Array(items.length);
   let nextIndex = 0;
   const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
