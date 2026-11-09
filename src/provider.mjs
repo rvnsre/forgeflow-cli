@@ -52,9 +52,11 @@ export class Provider {
       this.#calls += 1;
       const body = this.#makeBody(messages, tools, { ...options, maxOutputTokens: reservation.maxOutputTokens });
       let response;
+      let responseText;
       try {
-        response = await withTimeout(
-          (requestSignal) => fetch(`${this.config.baseUrl}/chat/completions`, {
+        ({ response, responseText } = await withTimeout(
+          async (requestSignal) => {
+            const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
             method: 'POST',
             signal: requestSignal,
             headers: {
@@ -64,11 +66,14 @@ export class Provider {
               ...(this.config.project ? { 'OpenAI-Project': this.config.project } : {}),
             },
             body: JSON.stringify(body),
-          }),
+          });
+            const responseText = await response.text();
+            return { response, responseText };
+          },
           this.timeoutMs,
           signal,
           'Provider request',
-        );
+        ));
       } catch (error) {
         if (signal?.aborted) throw signal.reason ?? error;
         const retryable = error.code === 'TIMEOUT' || error.cause?.code === 'ECONNRESET' || error.cause?.code === 'ETIMEDOUT';
@@ -81,7 +86,7 @@ export class Provider {
 
       if (response.ok) {
         let payload;
-        try { payload = await response.json(); }
+        try { payload = JSON.parse(responseText); }
         catch (error) { throw new ProviderError('API returned malformed JSON.', { cause: error }); }
         this.#recordUsage(payload?.usage);
         const promptTokens = payload?.usage?.prompt_tokens ?? payload?.usage?.input_tokens ?? reservation.inputEstimate;
@@ -93,7 +98,7 @@ export class Provider {
       }
 
       const requestId = response.headers.get('x-request-id') ?? response.headers.get('request-id');
-      const detail = redactSecrets((await response.text().catch(() => '')).slice(0, MAX_ERROR_CHARS));
+      const detail = redactSecrets(responseText.slice(0, MAX_ERROR_CHARS));
       const retryAfterMs = parseRetryAfter(response.headers.get('retry-after'));
       if (response.status === 401 || response.status === 403) {
         this.#cooldowns.set(key, Date.now() + 60_000);

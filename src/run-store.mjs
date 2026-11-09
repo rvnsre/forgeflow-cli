@@ -12,6 +12,9 @@ export function createRunId(now = new Date()) {
 
 export class RunStore {
   constructor(projectRoot, runId) {
+    if (typeof runId !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,127}$/.test(runId)) {
+      throw new Error('Run ID must contain only letters, numbers, underscores and hyphens (1-128 characters).');
+    }
     this.projectRoot = resolve(projectRoot);
     this.runId = runId;
     this.root = join(this.projectRoot, '.forgeflow', 'runs', runId);
@@ -21,7 +24,10 @@ export class RunStore {
 
   async initialize(initialState) {
     await mkdir(this.root, { recursive: true, mode: 0o700 });
-    const existing = await this.readState().catch(() => null);
+    const existing = await this.readState().catch((error) => {
+      if (error.code === 'ENOENT') return null;
+      throw error;
+    });
     if (existing) return existing;
     const state = {
       schema: CURRENT_SCHEMA,
@@ -119,8 +125,8 @@ export class RunStore {
     const names = await readdir(base).catch(() => []);
     const runs = [];
     for (const runId of names) {
-      const store = new RunStore(projectRoot, runId);
       try {
+        const store = new RunStore(projectRoot, runId);
         const state = await store.readState();
         runs.push({ runId, status: state.status, createdAt: state.createdAt, updatedAt: state.updatedAt, summary: state.summary });
       } catch { /* Ignore half-written or outdated run state. */ }

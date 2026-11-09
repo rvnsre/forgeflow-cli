@@ -12,7 +12,8 @@
   "scripts": {
     "start": "node ./bin/forgeflow.mjs",
     "doctor": "node ./bin/forgeflow.mjs doctor",
-    "check": "node ./src/check-syntax.mjs"
+    "check": "node ./src/check-syntax.mjs",
+    "test": "node --test"
   },
   "peerDependencies": {
     "playwright": ">=1.50.0"
