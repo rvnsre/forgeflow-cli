@@ -1,0 +1,48 @@
+name: Bug report
+description: Report a reproducible ForgeFlow problem.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for testing ForgeFlow. Remove API keys, credentials, and private source code before sharing."
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Explain what you expected and what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the exact command, a small example, and whether it fails with one worker.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      value: |
+        - OS and version:
+        - Node.js version:
+        - ForgeFlow version or commit:
+        - Provider and model (no keys):
+        - Browser/shell enabled:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted diagnostic output
+      description: Include only relevant lines from the error, state.json, or events.jsonl.
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I removed credentials and private project data.
+          required: true
+        - label: I searched existing issues for the same problem.
+          required: true
